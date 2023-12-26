@@ -151,7 +151,7 @@ def getAbsorption(TMMresults,structure,wvlths,Efields=None):
     # except ValueError:
     #     index,[ts,tp,bts,btp,rs,rp,brs,brp],ratio,getElements,getPropPS = TMMresults
     index,[ts,tp,bts,btp,rs,rp,brs,brp],ratio,subCoef,getElements,getPropPS = TMMresults
-    Absorbs,Absorbp = np.array([[]]),np.array([[]])
+    Absorbs,Absorbp = [],[]
     if Efields: CurLayer = len(Efields[0])
     for ii,st in enumerate(reversed(structure)):
         if st[1] and st[5]:
@@ -176,8 +176,8 @@ def getAbsorption(TMMresults,structure,wvlths,Efields=None):
             no,co = inc_refindex.real,np.cos(inc_angle)
             AbCoef = (4*np.pi*nn*kk)/(no*co*wvlths)
             try:
-                Absorbs = np.append(AbCoef*Fs,Absorbs,axis=0)
-                Absorbp = np.append(AbCoef*Fp,Absorbs,axis=0)
+                Absorbs.insert(0,AbCoef*Fs)
+                Absorbp.insert(0,AbCoef*Fp)
             except ValueError:
                 Absorbs = AbCoef*Fs
                 Absorbp = AbCoef*Fp
