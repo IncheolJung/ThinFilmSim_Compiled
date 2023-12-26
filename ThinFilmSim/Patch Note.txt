@@ -1,0 +1,327 @@
+
+
+=====================================================================
+	v0.6.3b
+=====================================================================
+
+  - update: the admittance diagram plot is now smoother.
+
+  - update: bug report is now available.
+
+=====================================================================
+	v0.6.3a
+=====================================================================
+
+  - bugfix: in cie plot, markers appear as "x" when sweeping parameters other than incident angle. not they normally appear as ".".
+
+  - bugfix: in cie plot, the title no longer exhibit some unknown values when sweeping parameters other than incident angle.
+
+  - bugfix: the structure no longer falls back to the old one (accidental ctrl+z) when changing configuration.
+
+=====================================================================
+	v0.6.3
+=====================================================================
+
+  - parameter sweep for EMA is now supported.
+
+  - fix: unnecessary interpolation is now avoided. interpolation only happens when any of the new wavelength values is outside of the old wavelength range.
+
+  - bugfix: freezing after fitting with EMA-included structure.
+  
+  - bugfix: Jsc fitting.
+
+=====================================================================
+	v0.6.2b
+=====================================================================
+
+  - hotfix for calculation of spectral responses
+    → Bug fix for the wrong calculation resulting in the same spectral reflectance in both s- and p-waves.
+    → Bug fix for the snell's equation for evanescent fields. now there is no akward boasting of spectral response.
+  
+  - "openpyxl.cell._writer" is now compiled with the software enabling interpolation process.
+
+=====================================================================
+	v0.6.2a
+=====================================================================
+
+  - hotfix for EMA treatment
+    → Bug in updating refindex of EMA model is fixed.
+    → Bug in linear model is fixed.
+    → Cavity length for EMA model can now be calculated.
+    → Reflectance and back reflectance calculation when a substrate exists is fixed for fitting loss functions.
+  
+  - Show Layer Thickness Checkbutton is now automatically unchecked once the structure is updated.
+
+=====================================================================
+	v0.6.2
+=====================================================================
+
+  - calculation is slightly optimized.
+
+  - bugfix: simulation for oblique incidence is modified.
+  
+  - bugfix: fitting is now available with EMA layer in the structure.
+
+  - bugfix: freezing or breaking issue when using show_layer_thickness and EMA layer at the same time.
+
+  - EMA now can be described as follow:
+    → EMA method, (depolarization factor, if necessary), material, concentration, fitting range
+    → write EMA model in the material entry as above with separator ";".
+    → when it comes to the material concentration or fitting range, do not use ";" but "%" and "f" instead, respectively.
+    → if the value should be fixed do not enter fitting range.
+    → The example below is for a Maxwell-Garnette model when the mixed layer consists of Al and Air with filling factor as 0.5 and the fitting range for the filling factor as 0.3~0.6. You should notice that only the material concentration for Al can be omitted because it can be inferred from the concentration for Air.
+    → ex) B%0.33;Al%0.5;Air%0.5f[0.3,0.6]
+
+  - bugfix: structure changing problem especially when using EMA is now fixed. there is possibility of bug when the notation described above is not used or when the list notation is used.
+
+  - bugfix: fail in reading Ellipsometry data for depolarization measurement.
+
+  - bugfix: Abnormal plotting of Ellipsometry data for depolarization measurement.
+
+  - modified: y axis range is modifed so that the graph of Ellipsometry  data for depolarization measurement is properly plotted.
+
+  - 업데이트 예정 (v0.7.0)
+    → Ctrl-Z 버그 수정
+    → EMA 물질을 별도로 저장하거나 preset을 만들어서 더 쉽게 사용할 수 있도록 함.
+    → Ellipsometry data 혹은 Optical constants data 를 export 할 때 제대로 export되지 않는 버그 수정.
+    → EMA와 유사한 방식으로 Harmonic oscillator를 도입.
+    → meta-heuristic algorithm을 활용한 피팅 도입.
+    → 특히 Ellipsometry에서 데이터를 여러개 사용하기 더 쉽도록 변경. (파장 범위가 다른 데이터를 한번에 사용하거나 피팅 연산을 더 효율적으로 하도록 수정하거나 등)
+
+
+
+=====================================================================
+	v0.6.1
+=====================================================================
+  
+  - 몇가지 버그 수정
+
+  - EMA method 관련 update
+    → Combined model 을 구성할 수 있음.
+    → 이제 다음과 같은 형식으로 EMA model 을 구성함:
+      EMA model = {
+          "EMAmethod": str (linear, Bruggeman, GLAD),
+          "refindex": list (materials, may consist of either str or arr),
+          "concentration": list,
+          "filling_factor": float,
+          "deposition_angle": float,
+          "depolarization_factor": float,
+          }
+    → materials 칸에 상기 자료구조를 따라 EMA 모델을 정의하여 입력.
+    → 하기 방식을 따라 [keyward,mat1,mat2,...] 형식으로 mixed material list를 materials 칸에 입력하고 dep.ang. 칸과 coherence 칸에 filling factor와 depolarization factor를 기입.
+    → materials 칸에 mixed material을 입력시에 가장 앞에 keyward 또는 model name 을 입력하여 EMA method 를 지정할 수 있음 (대소문자 구분 없음)
+      Linear model: "l" or "linear"
+      Bruggeman model: "b" or "bruggeman"
+      GLAD model: "g" or "glad" (데이터가 없는 물질의 경우에는 linear와 동일)
+    → Linear model을 사용하는 경우 dep.ang. 칸에 각 물질의 concentration을 ","로 구분하여 입력하면 둘 이상의 물질로 구성된 mixed layer를 구성할 수 있음.
+    → materials 칸에 EMA model의 list를 입력하면 자동으로 linear model을 사용하여 계산함.
+  
+  - Ellipsometry data 관련 기능 추가.
+    → Ellipsometry data (psi,delta) 를 읽어올 수 있음 (VASE에서 읽어온 .dat 파일 그대로 import)
+    → Ellipsometry data (psi,delta) 를 plot할 수 있음 (iso 혹은 depol 모드: 각각 delta값 범위가 delta ∈ [0,180]DEG 이거나 delta ∈ [-180,180]DEG 이 되도록 wraping한 data임)
+    → Ellipsometry data (psi,delta) 에 구조를 fitting할 수 있음.
+  
+  - Optical constants 관련 기능 추가.
+    → 각 층 (incident and exident media 포함) 의 Optical constants를 plot할 수 있음. 이 때 Optical constants 는 EMA 혹은 GLAD에 의해 변화한 굴절률을 반영함.
+
+
+
+=====================================================================
+	v0.6.0
+=====================================================================
+
+  - Bruggeman model을 사용하여 EMA을 할 수 있음.
+    → Mixed layer에서 ","를 사용하여 물질을 구분 (공백없이)
+    → Thickness에 Effective layer의 두께를 지정
+    → DepoAngle에 Filling factor를 지정 (v ∈ [0,1])
+    → Coherence에 Depolarization factor를 지정 (v ∈ [0,1]) (Depolarization factor의 Fit range는 []으로 지정되기 때문에 Optimization하기 위해서는 아래 방법을 사용해야 함.)
+    → 혹은 material에 직접 list 형식으로 입력: [m1,m2,f,f_range,Q,Q_range]
+
+  - Efield 혹은 Absorption plot에 의한 렉 개선.
+
+  - 층별 Electric field maxima를 출력.
+
+  - Oklab 좌표계 추가.
+
+  - Periodic Structure 버그 해결.
+
+  - 물질 선택시에 Enter를 사용한 검색 기능 지원. 모든 물질 리스트를 보기 위해서는 마우스 왼쪽 클릭 혹은 Alt-Enter 를 통해 가능함.
+
+  - 물질 추가시에 이제 interpolation 만 해주면 물질 리스트를 자동으로 업데이트함.
+
+  - Efield plot 시에 최상층 (incident medium 제외) 물질이 Air 라면 해당 층을 incident medium 으로 취급하여 Depth 를 음수로 나타냄.
+
+  - 기판의 back-side reflection 관련 계산 보완. (*기판 아래 박막은 아직 제대로 시뮬레이션 되지 않음)
+
+  - Undo/Redo 기능 사용시 발생하는 버그 해결 및 기능 개선.
+
+  - Induced transmission filter 설계툴이 열리지 않는 버그 해결.
+
+  - Interpolation시에 Table이 사라지는 치명적인 버그 해결.
+
+  - Jsc fitting이 불가능한 버그 해결.
+
+  - Admittance diagram이 비정상적으로 그려지던 버그 해결.
+
+
+
+=====================================================================
+	v0.5.3
+=====================================================================
+
+  - Transfer Matrix 계산 속도 개선.
+  - OAD 계산 지원.
+  - OAD 계산 지원을 위하여 Structure dat 파일 포멧을 변경.
+  - 이전 버전의 Structure dat 파일 포멧도 호환되며 자동으로 업데이트함.
+
+  - Plot 변경시에 발생하던 렉 개선.
+
+  - Structure loading 시에 직전에 불러왔던 폴더를 기억하여 해당 폴더에서 불러오도록 함. (처음 불러올 때는 "Save/")
+
+  - OAD 를 사용할 경우에 Quarter wavelength layer나 Cavity layer의 계산이 정상적으로 수행되도록 수정함
+
+
+~~~~~~~OLD~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+=====================================================================
+	v0.5.0
+=====================================================================
+
+  - Spectrum fitting 기능 수정.
+    → Spectrum을 import할 때에 data의 column이 2 이상인 경우에는 정상적으로 import 가능하도록 수정.
+    → Spectrum의 파일명이 Rs, Rm 등을 포함하는 경우 자동으로 Spectrum의 type을 정해줌.
+    → Ellipsometer raw data를 읽을 수 있음.
+    → 새로운 데이터형식 지원 (ang):
+      → csv 파일로 가장 왼쪽 column에 wavelength 입력하고 다음 column부터 각도별 데이터를 넣고 저장.
+      → 최상단 row는 각 데이터의 각도를 입력.
+      → 파일을 저장 후에 확장자를 ang로 변경.
+  
+  - Color fitting 기능 추가.
+    → CIELAB 좌표계를 사용하여 피팅할 수 있음.
+    → XYZrate 칸에 lab, Lab, LAB, CIELAB 를 입력하고 엔터 하면 사용 가능.
+  
+  - Structure Table의 구조를 변경할때의 속도를 최적화. 특히 층 이동시의 속도 개선.
+
+  - RT나 Phase Shift를 계산할때 reference wavelength에서의 값을 그래프의 위에 보여주도록 함 (incident angle이 하나일때에 한함).
+
+  - Phase Shift 그래프의 tick label을 수정하여 가독성 확보.
+
+  - Figure garbage collecting이 안되던 문제 해결하여 그래프를 그릴수록 느려지던 현상을 해결.
+
+  - Fitting이나 Calculation 도중에 멈출 수 있음.
+
+  - Admittance diagram의 iso-phase of reflectance가 Im[Y]가 0인 경우 y=0으로 그려지도록 수정
+
+  - Admittance diagram를 그릴 때에 datapoint를 더 세밀하게 찍도록 수정.
+
+  - 그래프의 여백 부분을 조절하여 그래프가 잘리는 일이 없도록 조정.
+
+  - angle별 혹은 thickness별 simulation 도중에 창을 옮길 수 있도록 함.
+
+  - angle별 혹은 thickness별 simulation 도중에 현재 계산중인 값을 상태창에 띄워줌.
+
+  - Efield/Absorption plot시에 Wavelength가 정수로 표시되도록 수정.
+
+  - Induced Transmission Filter 설계 툴을 추가.
+
+  - RT / Phase Shift plot 에서 최대/최소값인 Wavelength를 찾을 수 있도록 함.
+    → Defaults: Wavelenght (nm) 에 min 혹은 max (대문자도 가능) 를 입력하고 Calculate
+    → N번째 minimum 혹은 maximum을 찾기 위해서는 Defaults: Wavelenght (nm) 에 min N 혹은 max N 을 입력하고 Calculate
+    
+  - FWHM 계산시에 계산된 Half-maxima를 magenta dashed lines로 표시하도록 함.
+
+  - Fit 기능 사용시 Loss function을 MSE로 롤백함.
+
+  - Navigation Toolbar를 추가함. 차후 DND control을 지원하여 Toolbar는 없앨 예정임.
+
+  - Absorption plot시에 그래프가 딱 맞게 그려짐. (min-max 버그 수정)
+
+
+=====================================================================
+	v0.4.0
+=====================================================================
+
+  - Wavelength interval이 1이 아니면 E-field와 Absorption이 찌그러져 그려지던 버그 수정.
+
+  - Wavelength interval이 1이 아니면 Jsc 계산이 비정상적으로 수행되던 것을 수정.
+
+  - Jsc 단위 수정.
+
+  - Admittance Diagram 변경.
+    → 물질명 표시를 껐다켰다 할 수 있음.
+    → iso-phase of reflectance 지원.
+
+  - Admittance Diagram이 최대 6개까지만 그려지던 버그 수정.
+
+  - 특히 Admittance 계산중에, Thickness가 1 nm 단위로 잘리면서 부정확하게 계산하는 버그를 수정.
+
+  - Forced Interpolation이 제대로 수행되지 않던 버그 수정.
+
+  - App icon 수정.
+
+  - 단축키 추가 (Quit, Variable Thickness).
+
+  - 단축키 관련 버그 수정.
+    → Cavity 단축키 입력시에 Order가 1로 되는 버그를 수정. 이제 정상적으로 0으로 입력됨.
+
+  - 메뉴바 조정.
+    → Open, Save, New를 File 메뉴로 가져옴.
+    → 각 메뉴의 단축키를 표시하도록 함.
+    → Fit, Calculate, Periodic Structure 기능도 메뉴바에서 수행 가능하도록 수정.
+    → Variable Thickness 기능 추가.
+
+  - 물질 콤보박스 조작법 변경.
+    → 아래 화살표, 휠 조작 삭제.
+    → 엔터키로 리스트를 열고 닫을 수 있음.
+
+  - Spectrum Fitting 기능 추가.
+    → csv 파일 (column 1: wavelength, column 2: spectrum) import하고 data의 종류 (ex. Rm(Reflectance mean)), 각 data의 incident angle 지정 후에 엔터.
+    → Fit 버튼 클릭하여 Fitting. 하단 info에 Fitting to Spectra로 나타나는지 확인.
+    → data library에 data가 존재하면 Spectrum에 맞추고 존재하지 않으면 Color에 맞춤.
+
+=====================================================================
+	
+=====================================================================
+	v0.3.0
+=====================================================================
+
+  - Undo, Redo 지원
+
+  - Admittance Diagram 지원.
+
+  - Phase Shift 지원.
+
+  - Variable Thickness 기능 지원.
+    → Layer 두께에 "v","v","variable","Variable" 을 입력 후에 계산하면 해당 층들의 두께를 sweep하면서 simulation 수행. 이 때의 angle of incidence는 defaults에 입력한 값을 사용.
+    → sweep은 Configuration\Angle Settings 의 값을 사용.
+    → Export Data시에는 기본 기능과 마찬가지로 출력됨. (단위는 Deg 그대로. 차후 수정 예정.)
+
+  - UI 수정.
+    → 메뉴바 추가.
+    → Structure table에 스크롤 기능 추가.
+    → Graph Type을 오른쪽 정렬함.
+    → 기타 Minor한 수정.
+
+=====================================================================
+	v0.2.0
+=====================================================================
+
+  - E-field 지원.
+
+  - Absorption 지원.
+
+  - Fit 기능 지원.
+
+  - Export Data 및 Export Graphics 지원.
+
+=====================================================================
+	v0.1.0
+=====================================================================
+
+  - 최초 버전.
+
+  - Transmittance/Reflectance 지원.
+
+  - CIE 좌표를 그릴 수 있도록 함.
+
+=====================================================================
